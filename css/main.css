@@ -549,8 +549,8 @@ main .site-header .logo a {
 	font: 0/0 a;
 	text-shadow: none;
 	color: transparent;
-	width: 116px;
-	height: 80px;
+	width: 520px;
+	height: 173px;
 	background: url("../images/logo/logo@2x.png") no-repeat;
 	background-size: contain;
 }
@@ -573,8 +573,8 @@ main .site-header .logo a {
 	}
 
 	main .site-header .logo a {
-		width: 104px;
-		height: 72px;
+		width: 304px;
+		height: 100px;
 	}
 
 }
@@ -631,7 +631,7 @@ main .site-header .logo a {
 	}
 
 	main .site-header .logo a {
-		width: 95px;
+		width: 170px;
 		height: 66px;
 	}
 
