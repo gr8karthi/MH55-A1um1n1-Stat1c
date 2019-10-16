@@ -1,397 +1,353 @@
-/*-----------------------------------------------------------------------------------
-/*
-/* Main JS
-/*
------------------------------------------------------------------------------------*/  
+ AOS.init({
+ 	duration: 800,
+ 	easing: 'slide',
+ 	once: false
+ });
 
-(function($) {
+jQuery(document).ready(function($) {
 
-   /*---------------------------------------------------- */
-	/* Preloader
-	------------------------------------------------------ */ 
-   $(window).load(function() {
+	"use strict";
 
-      // will first fade out the loading animation 
-    	$("#loader").fadeOut("slow", function(){
-
-        // will fade out the whole DIV that covers the website.
-        $("#preloader").delay(300).fadeOut("slow");
-
-      });     
-
-  	})
-
-   /*---------------------------------------------------- */
-	/* Final Countdown Settings
-	------------------------------------------------------ */
-	var finalDate = '2019/02/01';
-
-	$('div#counter').countdown(finalDate)
-   	.on('update.countdown', function(event) {
-
-   		$(this).html(event.strftime('<span>%D <em>days</em></span>' + 
-   										 	 '<span>%H <em>hours</em></span>' + 
-   										 	 '<span>%M <em>minutes</em></span>' +
-   										 	 '<span>%S <em>seconds</em></span>'));
-
-   });
-
-   /*----------------------------------------------------*/
-	/*  Placeholder Plugin Settings
-	------------------------------------------------------ */  	 
-	$('input').placeholder() 
 	
+	var siteMenuClone = function() {
 
-   /*----------------------------------------------------- */
-   /* Modals
-   ------------------------------------------------------- */   
-   $('.modal-toggles ul').on('click', 'a', function(e) {
+		$('.js-clone-nav').each(function() {
+			var $this = $(this);
+			$this.clone().attr('class', 'site-nav-wrap').appendTo('.site-mobile-menu-body');
+		});
 
-   	var html = $('html'),
-   		 main = $('main, footer'),
-   		 footer = $('footer'),           
-          curMod = $(this).attr('href'),  
-          modal = $(curMod),
-          modClose = modal.find('#modal-close');          
-         
-		main.fadeOut(500, function(){
-			$('html,body').scrollTop(0);
-        	modal.addClass('is-visible');
-      });  
-      
-      e.preventDefault();
 
-      // for old ie
-      if (html.hasClass('oldie')) {
+		setTimeout(function() {
+			
+			var counter = 0;
+      $('.site-mobile-menu .has-children').each(function(){
+        var $this = $(this);
+        
+        $this.prepend('<span class="arrow-collapse collapsed">');
 
-      	$(document).on('click', "#modal-close", function(evt) {
-	      	$('html,body').scrollTop(0); 
-	      	modal.removeClass('is-visible');
-	      	setTimeout(function() {      
-	        		main.fadeIn(500); 
-	        	}, 500);       
-	        	        
-	        	evt.preventDefault();
-      	});
+        $this.find('.arrow-collapse').attr({
+          'data-toggle' : 'collapse',
+          'data-target' : '#collapseItem' + counter,
+        });
 
+        $this.find('> ul').attr({
+          'class' : 'collapse',
+          'id' : 'collapseItem' + counter,
+        });
+
+        counter++;
+
+      });
+
+    }, 1000);
+
+		$('body').on('click', '.arrow-collapse', function(e) {
+      var $this = $(this);
+      if ( $this.closest('li').find('.collapse').hasClass('show') ) {
+        $this.removeClass('active');
+      } else {
+        $this.addClass('active');
       }
-      // other browsers
-      else {
-
-      	modClose.on('click', function(evt) {
-	      	$('html,body').scrollTop(0); 
-	      	modal.removeClass('is-visible');
-	      	setTimeout(function() {      
-	        		main.fadeIn(500); 
-	        	}, 500);       
-	        	        
-	        	evt.preventDefault();
-	      });
-
-      }     	
-
-   });
-
-   /*---------------------------------------------------- */
-	/* Owl Carousel
-	------------------------------------------------------ */ 
-	$("#owl-slider").owlCarousel({
-        navigation: false,
-        pagination: true,
-        items: 4,
-        navigationText: false
+      e.preventDefault();  
+      
     });
 
+		$(window).resize(function() {
+			var $this = $(this),
+				w = $this.width();
 
-   /*----------------------------------------------------*/
-  	/* FitText Settings
-  	------------------------------------------------------ */
-  	setTimeout(function() {
+			if ( w > 768 ) {
+				if ( $('body').hasClass('offcanvas-menu') ) {
+					$('body').removeClass('offcanvas-menu');
+				}
+			}
+		})
 
-   	  $('main h1, #mod-about h1').fitText(1.1, { minFontSize: '28px', maxFontSize: '38px' });
+		$('body').on('click', '.js-menu-toggle', function(e) {
+			var $this = $(this);
+			e.preventDefault();
 
-  	}, 100);
+			if ( $('body').hasClass('offcanvas-menu') ) {
+				$('body').removeClass('offcanvas-menu');
+				$this.removeClass('active');
+			} else {
+				$('body').addClass('offcanvas-menu');
+				$this.addClass('active');
+			}
+		}) 
 
-
-   /*---------------------------------------------------- */
-   /* ajaxchimp
-	------------------------------------------------------ */
-
-	// Example MailChimp url: http://xxx.xxx.list-manage.com/subscribe/post?u=xxx&id=xxx
-	var mailChimpURL = 'http://facebook.us8.list-manage.com/subscribe/post?u=cdb7b577e41181934ed6a6a44&amp;id=e65110b38d'
-
-
-	$('#mc-form').ajaxChimp({
-
-		language: 'es',
-	   url: mailChimpURL
-
-	});
-
-	// Mailchimp translation
-	//
-	//  Defaults:
-	//	 'submit': 'Submitting...',
-	//  0: 'We have sent you a confirmation email',
-	//  1: 'Please enter a value',
-	//  2: 'An email address must contain a single @',
-	//  3: 'The domain portion of the email address is invalid (the portion after the @: )',
-	//  4: 'The username portion of the email address is invalid (the portion before the @: )',
-	//  5: 'This email address looks fake or invalid. Please enter a real email address'
-
-	$.ajaxChimp.translations.es = {
-	  'submit': 'Submitting...',
-	  0: '<i class="fa fa-check"></i> We have sent you a confirmation email',
-	  1: '<i class="fa fa-warning"></i> You must enter a valid e-mail address.',
-	  2: '<i class="fa fa-warning"></i> E-mail address is not valid.',
-	  3: '<i class="fa fa-warning"></i> E-mail address is not valid.',
-	  4: '<i class="fa fa-warning"></i> E-mail address is not valid.',
-	  5: '<i class="fa fa-warning"></i> E-mail address is not valid.'
-	}
-
-	/*---------------------------------------------------- */
-	/* Map
-	------------------------------------------------------ */
-	var latitude = 14.549072,
-		 longitude = 121.046958,
-		 map_zoom = 15,		 
-		 main_color = '#d8ac00',
-		 saturation_value= -30,
-		 brightness_value= 5,
-		 winWidth = $(window).width();		 
-
-   // marker url
-	if ( winWidth > 480 ) {
-		marker_url = 'images/icon-location-b.png';                    
-   } else {
-      marker_url = 'images/icon-location.png';            
-   }	 
-
-	// map style
-	var style = [ 
-		{
-			// set saturation for the labels on the map
-			elementType: "labels",
-			stylers: [
-				{ saturation: saturation_value }
-			]
-		},  
-	   {	// poi stands for point of interest - don't show these lables on the map 
-			featureType: "poi",
-			elementType: "labels",
-			stylers: [
-				{visibility: "off"}
-			]
-		},
-		{
-			// don't show highways lables on the map
-	      featureType: 'road.highway',
-	      elementType: 'labels',
-	      stylers: [
-	         { visibility: "off" }
-	      ]
-	   }, 
-		{ 	
-			// don't show local road lables on the map
-			featureType: "road.local", 
-			elementType: "labels.icon", 
-			stylers: [
-				{ visibility: "off" } 
-			] 
-		},
-		{ 
-			// don't show arterial road lables on the map
-			featureType: "road.arterial", 
-			elementType: "labels.icon", 
-			stylers: [
-				{ visibility: "off" }
-			] 
-		},
-		{
-			// don't show road lables on the map
-			featureType: "road",
-			elementType: "geometry.stroke",
-			stylers: [
-				{ visibility: "off" }
-			]
-		}, 
-		// style different elements on the map
-		{ 
-			featureType: "transit", 
-			elementType: "geometry.fill", 
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-		}, 
-		{
-			featureType: "poi",
-			elementType: "geometry.fill",
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-		},
-		{
-			featureType: "poi.government",
-			elementType: "geometry.fill",
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-		},
-		{
-			featureType: "poi.sport_complex",
-			elementType: "geometry.fill",
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-		},
-		{
-			featureType: "poi.attraction",
-			elementType: "geometry.fill",
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-		},
-		{
-			featureType: "poi.business",
-			elementType: "geometry.fill",
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-		},
-		{
-			featureType: "transit",
-			elementType: "geometry.fill",
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-		},
-		{
-			featureType: "transit.station",
-			elementType: "geometry.fill",
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-		},
-		{
-			featureType: "landscape",
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-			
-		},
-		{
-			featureType: "road",
-			elementType: "geometry.fill",
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-		},
-		{
-			featureType: "road.highway",
-			elementType: "geometry.fill",
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-		}, 
-		{
-			featureType: "water",
-			elementType: "geometry",
-			stylers: [
-				{ hue: main_color },
-				{ visibility: "on" }, 
-				{ lightness: brightness_value }, 
-				{ saturation: saturation_value }
-			]
-		}
-	];
-		
-	// map options
-	var map_options = {
-
-      	center: new google.maps.LatLng(latitude, longitude),
-      	zoom: 15,
-      	panControl: false,
-      	zoomControl: false,
-        	mapTypeControl: false,
-      	streetViewControl: false,
-      	mapTypeId: google.maps.MapTypeId.ROADMAP,
-      	scrollwheel: false,
-      	styles: style
-
-    	};
-
-   // inizialize the map
-	var map = new google.maps.Map(document.getElementById('map-container'), map_options);
-
-	// add a custom marker to the map				
-	var marker = new google.maps.Marker({
-
-		 	position: new google.maps.LatLng(latitude, longitude),
-		 	map: map,
-		 	visible: true,
-		 	icon: marker_url
-		 
+		// click outisde offcanvas
+		$(document).mouseup(function(e) {
+	    var container = $(".site-mobile-menu");
+	    if (!container.is(e.target) && container.has(e.target).length === 0) {
+	      if ( $('body').hasClass('offcanvas-menu') ) {
+					$('body').removeClass('offcanvas-menu');
+				}
+	    }
 		});
+	}; 
+	siteMenuClone();
 
-	// add custom buttons for the zoom-in/zoom-out on the map
-	function CustomZoomControl(controlDiv, map) {
+
+	var sitePlusMinus = function() {
+		$('.js-btn-minus').on('click', function(e){
+			e.preventDefault();
+			if ( $(this).closest('.input-group').find('.form-control').val() != 0  ) {
+				$(this).closest('.input-group').find('.form-control').val(parseInt($(this).closest('.input-group').find('.form-control').val()) - 1);
+			} else {
+				$(this).closest('.input-group').find('.form-control').val(parseInt(0));
+			}
+		});
+		$('.js-btn-plus').on('click', function(e){
+			e.preventDefault();
+			$(this).closest('.input-group').find('.form-control').val(parseInt($(this).closest('.input-group').find('.form-control').val()) + 1);
+		});
+	};
+	// sitePlusMinus();
+
+
+	var siteSliderRange = function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: 0,
+      max: 500,
+      values: [ 75, 300 ],
+      slide: function( event, ui ) {
+        $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+      }
+    });
+    $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
+      " - $" + $( "#slider-range" ).slider( "values", 1 ) );
+	};
+	// siteSliderRange();
+
+
 	
-		// grap the zoom elements from the DOM and insert them in the map 
-	 	var controlUIzoomIn= document.getElementById('map-zoom-in'),
-		  	 controlUIzoomOut= document.getElementById('map-zoom-out');
 
-		controlDiv.appendChild(controlUIzoomIn);
-		controlDiv.appendChild(controlUIzoomOut);
+	var siteCarousel = function () {
+		if ( $('.nonloop-block-13').length > 0 ) {
+			$('.nonloop-block-13').owlCarousel({
+		    center: false,
+		    items: 1,
+		    loop: true,
+				stagePadding: 0,
+		    margin: 20,
+		    smartSpeed: 1000,
+		    autoplay: true,
+		    nav: true,
+		    responsive:{
+	        600:{
+	        	margin: 20,
+	        	nav: true,
+	          items: 2
+	        },
+	        1000:{
+	        	margin: 20,
+	        	stagePadding: 0,
+	        	nav: true,
+	          items: 3
+	        }
+		    }
+			});
+			$('.custom-next').click(function(e) {
+				e.preventDefault();
+				$('.nonloop-block-13').trigger('next.owl.carousel');
+			})
+			$('.custom-prev').click(function(e) {
+				e.preventDefault();
+				$('.nonloop-block-13').trigger('prev.owl.carousel');
+			})
 
-		// Setup the click event listeners and zoom-in or out according to the clicked element
-		google.maps.event.addDomListener(controlUIzoomIn, 'click', function() {
-			map.setZoom(map.getZoom()+1)
-		});
-		google.maps.event.addDomListener(controlUIzoomOut, 'click', function() {
-			map.setZoom(map.getZoom()-1)
-		});
 			
+		}
+
+		$('.slide-one-item').owlCarousel({
+	    center: false,
+	    items: 1,
+	    loop: true,
+			stagePadding: 0,
+	    margin: 0,
+	    smartSpeed: 1500,
+	    autoplay: true,
+	    pauseOnHover: false,
+	    dots: true,
+	    nav: true,
+	    navText: ['<span class="icon-keyboard_arrow_left">', '<span class="icon-keyboard_arrow_right">']
+	  });
+
+	  if ( $('.owl-all').length > 0 ) {
+			$('.owl-all').owlCarousel({
+		    center: false,
+		    items: 1,
+		    loop: false,
+				stagePadding: 0,
+		    margin: 0,
+		    autoplay: false,
+		    nav: false,
+		    dots: true,
+		    touchDrag: true,
+  			mouseDrag: true,
+  			smartSpeed: 1000,
+				navText: ['<span class="icon-arrow_back">', '<span class="icon-arrow_forward">'],
+		    responsive:{
+	        768:{
+	        	margin: 30,
+	        	nav: false,
+	        	responsiveRefreshRate: 10,
+	          items: 1
+	        },
+	        992:{
+	        	margin: 30,
+	        	stagePadding: 0,
+	        	nav: false,
+	        	responsiveRefreshRate: 10,
+	        	touchDrag: false,
+  					mouseDrag: false,
+	          items: 3
+	        },
+	        1200:{
+	        	margin: 30,
+	        	stagePadding: 0,
+	        	nav: false,
+	        	responsiveRefreshRate: 10,
+	        	touchDrag: false,
+  					mouseDrag: false,
+	          items: 3
+	        }
+		    }
+			});
+		}
+		
+	};
+	siteCarousel();
+
+	
+
+	var siteCountDown = function() {
+
+		$('#date-countdown').countdown('2020/10/10', function(event) {
+		  var $this = $(this).html(event.strftime(''
+		    + '<span class="countdown-block"><span class="label">%w</span> weeks </span>'
+		    + '<span class="countdown-block"><span class="label">%d</span> days </span>'
+		    + '<span class="countdown-block"><span class="label">%H</span> hr </span>'
+		    + '<span class="countdown-block"><span class="label">%M</span> min </span>'
+		    + '<span class="countdown-block"><span class="label">%S</span> sec</span>'));
+		});
+				
+	};
+	// siteCountDown();
+
+	var siteDatePicker = function() {
+
+		if ( $('.datepicker').length > 0 ) {
+			$('.datepicker').datepicker();
+		}
+
+	};
+	siteDatePicker();
+
+	var siteSticky = function() {
+		$(".js-sticky-header").sticky({topSpacing:0});
+	};
+	siteSticky();
+
+	// navigation
+  var OnePageNavigation = function() {
+    var navToggler = $('.site-menu-toggle');
+
+   	$("body").on("click", ".main-menu li a[href^='#'], .smoothscroll[href^='#'], .site-mobile-menu .site-nav-wrap li a[href^='#']", function(e) {
+      e.preventDefault();
+
+      var hash = this.hash;
+
+      $('html, body').animate({
+        'scrollTop': $(hash).offset().top - 50
+      }, 600, 'easeInOutExpo', function() {
+        // window.location.hash = hash;
+
+      });
+
+    });
+  };
+  OnePageNavigation();
+
+  var siteScroll = function() {
+
+  	
+
+  	$(window).scroll(function() {
+
+  		var st = $(this).scrollTop();
+
+  		if (st > 100) {
+  			$('.js-sticky-header').addClass('shrink');
+  		} else {
+  			$('.js-sticky-header').removeClass('shrink');
+  		}
+
+  	}) 
+
+  };
+  siteScroll();
+
+  // Stellar
+  $(window).stellar({
+  	horizontalScrolling: false,
+    responsive: true,
+  });
+
+
+  var counter = function() {
+		
+		$('#about-section').waypoint( function( direction ) {
+
+			if( direction === 'down' && !$(this.element).hasClass('ftco-animated') ) {
+
+				var comma_separator_number_step = $.animateNumber.numberStepFactories.separator(',')
+				$('.number > span').each(function(){
+					var $this = $(this),
+						num = $this.data('number');
+					$this.animateNumber(
+					  {
+					    number: num,
+					    numberStep: comma_separator_number_step
+					  }, 7000
+					);
+				});
+				
+			}
+
+		} , { offset: '95%' } );
+
 	}
-
-	var zoomControlDiv = document.createElement('div');
-	var zoomControl = new CustomZoomControl(zoomControlDiv, map);
-
-	// insert the zoom div on the top right of the map
-	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(zoomControlDiv);	
+	counter();
 
 
+	 var siteIstotope = function() {
+  	/* activate jquery isotope */
+	  var $container = $('#posts').isotope({
+	    itemSelector : '.item',
+	    isFitWidth: true
+	  });
 
-})(jQuery);
+	  $(window).resize(function(){
+	    $container.isotope({
+	      columnWidth: '.col-sm-3'
+	    });
+	  });
+	  
+	  $container.isotope({ filter: '*' });
+
+	    // filter items on button click
+	  $('#filters').on( 'click', 'button', function(e) {
+	  	e.preventDefault();
+	    var filterValue = $(this).attr('data-filter');
+	    $container.isotope({ filter: filterValue });
+	    $('#filters button').removeClass('active');
+	    $(this).addClass('active');
+	  });
+  }
+
+  siteIstotope();
+
+});
